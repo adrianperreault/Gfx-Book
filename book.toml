@@ -1,0 +1,8 @@
+[book]
+title = "Gfx-hal"
+description = "A practical guide and reference manual for Gfx-hal and Winit."
+authors = ["Adrian Perreault"]
+
+create-missing = true
+multilingual = false
+src = "src"
