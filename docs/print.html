@@ -1,0 +1,621 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Gfx-hal</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="A practical guide and reference manual for Gfx-hal and Winit.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <base href="">
+
+        <link rel="stylesheet" href="book.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <link rel="shortcut icon" href="favicon.png">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme -->
+        
+
+        
+
+        <!-- Fetch Clipboard.js from CDN but have a local fallback -->
+        <script src="https://cdn.jsdelivr.net/clipboard.js/1.6.1/clipboard.min.js"></script>
+        <script>
+            if (typeof Clipboard == 'undefined') {
+                document.write(unescape("%3Cscript src='clipboard.min.js'%3E%3C/script%3E"));
+            }
+        </script>
+
+    </head>
+    <body class="light">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
+            if (theme === null || theme === undefined) { theme = 'light'; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme;
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            document.querySelector('html').classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <ol class="chapter"><li><a href="ch_2/_0_quick_start_guide.html"><strong aria-hidden="true">1.</strong> Quick Start Guide</a></li><li><ol class="section"><li><a href="ch_2/_2_making_a_window.html"><strong aria-hidden="true">1.1.</strong> Making a Window</a></li><li><a href="ch_2/_3_graphics_backends_prep.html"><strong aria-hidden="true">1.2.</strong> Graphics Backends Prep</a></li><li><a href="ch_2/_4_instances_adapters_and_surfaces.html"><strong aria-hidden="true">1.3.</strong> Instances, Adapters and Surfaces</a></li></ol></li></ol>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="submenu">
+                                <li><button class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li><button class="theme" id="rust">Rust</button></li>
+                                <li><button class="theme" id="coal">Coal</button></li>
+                                <li><button class="theme" id="navy">Navy</button></li>
+                                <li><button class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                        </div>
+
+                        <h1 class="menu-title">Gfx-hal</h1>
+
+                        <div class="right-buttons">
+                            <a href="print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <a class="header" href="print.html#quick-start-guide-wip" id="quick-start-guide-wip"><h1>Quick Start Guide (WIP)</h1></a>
+<a class="header" href="print.html#making-a-window-with-winit-wip" id="making-a-window-with-winit-wip"><h2>Making a Window with Winit (WIP)</h2></a>
+<p>When working with Gfx-hal, we need a window to display content and interact with input. Typically this is done
+with <a href="https://github.com/tomaka/winit">Winit</a>, a cross-platform window creation and management library written in Rust.
+When targeting OpenGL with Gfx-hal, there are context requirements that necessitate using <a href="https://github.com/tomaka/glutin">Glutin</a> (OpenGL, UTilities and INput) instead of Winit. The two APIs are similar. In fact, Winit was created by cutting out the OpenGL related stuff from Glutin.</p>
+<a class="header" href="print.html#window-setup" id="window-setup"><h3>Window Setup</h3></a>
+<p>Let's start off with a basic 800 x 600 window with a title:</p>
+<pre><pre class="playpen"><code class="language-rust">extern crate winit;
+use winit::{Event, WindowEvent};
+
+fn main() {
+
+    // Create a main execution event loop for listening for input/window events.
+    let mut events_loop = winit::EventsLoop::new();
+
+    // Specify basic window properties and EventsLoop with WindowBuilder
+    // and build/display the window.
+    let window = winit::WindowBuilder::new()
+        .with_title(&quot;Gfx-hal Quickstart Tutorial&quot;)
+        .with_dimensions(800, 600)
+        .build(&amp;events_loop)
+        .unwrap();
+
+</code></pre></pre>
+<a class="header" href="print.html#window-events" id="window-events"><h3>Window Events</h3></a>
+<p>We'll use window events in the main events loop to handle behaviors like closing a window on keypress
+and later on in the series, window resized and  mouse input events.
+.</p>
+<p>WindowEvents in Winit include:</p>
+<table><thead><tr><th> Window               </th><th> Mouse/Cursor  </th><th> Other Input / Misc. </th></tr></thead><tbody>
+<tr><td> Resized              </td><td> MouseInput    </td><td>  KeyboardInput      </td></tr>
+<tr><td> Moved                </td><td> MouseWheel    </td><td> TouchpadPressure    </td></tr>
+<tr><td> Closed               </td><td> CursorLeft    </td><td>  AxisMotion         </td></tr>
+<tr><td> DroppedFile          </td><td> CursorEntered </td><td>  Refresh            </td></tr>
+<tr><td> HoveredFile          </td><td> CursorMoved   </td><td>  Touch              </td></tr>
+<tr><td> HoveredFileCancelled </td><td>               </td><td>  HiDPIFactorChanged </td></tr>
+<tr><td> ReceivedCharacter    </td><td>               </td><td>                     </td></tr>
+<tr><td> Focused              </td><td>               </td><td>                     </td></tr>
+</tbody></table>
+<a class="header" href="print.html#main-loop" id="main-loop"><h3>Main Loop</h3></a>
+<p>Let's kick off the main events loop and make sure we can close the window.</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+  let mut running = true;
+
+    // Keep our main loop running until an event to explicitly stop it.
+    while running {
+
+        events_loop.poll_events(|event| {
+
+    // If we get a WindowEvent...
+            if let winit::Event::WindowEvent { event, .. } = event {
+                match event {
+
+    // And if that WindowEvent is a KeyBoardInput event...
+                    winit::WindowEvent::KeyboardInput {
+                        input: winit::KeyboardInput {
+
+    // If the KeyboardInput was the Escape key...
+                            virtual_keycode: Some(winit::VirtualKeyCode::Escape),
+                            ..
+                        },
+                        ..
+                    }
+    // Or, if the event is a window closed event,
+    // set running to false to end the main loop.
+                    | winit::WindowEvent::Closed =&gt; running = false,
+                    _ =&gt; (),
+                }
+            }
+        });
+    }
+
+#}</code></pre></pre>
+<p>With any luck, running this code should produce a basic window. (How exciting!)
+Let's carry on and start setting up Gfx-hal backends in the next section.</p>
+<a class="header" href="print.html#mainrs-full-listing-----click--img-srchttpsiimgurcommjheqxqpng-altimg-" id="mainrs-full-listing-----click--img-srchttpsiimgurcommjheqxqpng-altimg-"><h5>main.rs full listing   - click  <img src="https://i.imgur.com/mjHEqXq.png" alt="img" /></h5></a>
+<pre><pre class="playpen"><code class="language-rust">
+# extern crate winit;
+#
+# use winit::WindowEvent;
+#
+# fn main() {
+# // ## Window Setup ##################################################################
+#
+#     // Create a main execution event loop for listening for input/window events.
+#     let mut events_loop = winit::EventsLoop::new();
+#
+#     // Specify basic window properties and EventsLoop with WindowBuilder
+#     // and build/display the window.
+#     let window = winit::WindowBuilder::new()
+#         .with_title(&quot;Gfx-hal Quickstart Tutorial&quot;)
+#         .with_dimensions(800, 600)
+#         .build(&amp;events_loop)
+#         .unwrap();
+#
+# //###################################################################################
+#
+#
+# //## Main Loop Execution #############################################################
+#     let mut running = true;
+#
+#     // Run our main loop indefinitely, checking for events until we explicitly stop it.
+#     while running {
+#
+#         events_loop.poll_events(|event| {
+#
+#             // If we get a WindowEvent...
+#             if let winit::Event::WindowEvent { event, .. } = event {
+#                 match event {
+#
+#                     // And if that WindowEvent is a KeyBoardInput event...
+#                     winit::WindowEvent::KeyboardInput {
+#                         input: winit::KeyboardInput {
+#
+#                             // If the KeyboardInput was the Escape key...
+#                             virtual_keycode: Some(winit::VirtualKeyCode::Escape),
+#                             ..
+#                         },
+#                         ..
+#                     }
+#                     // Or, if the event is a window closed event,
+#                     // set running to false to end the main loop.
+#                     | winit::WindowEvent::Closed =&gt; running = false,
+#                     _ =&gt; (),
+#                 }
+#             }
+#         });
+#     }
+# //##################################################################################
+# }
+</code></pre></pre>
+<a class="header" href="print.html#graphics-backends-prep-wip" id="graphics-backends-prep-wip"><h1>Graphics Backends Prep (WIP)</h1></a>
+<p>Gfx-rs supports multiple graphics backends:</p>
+<ul>
+<li>Vulkan,</li>
+<li>Direct3D 12,</li>
+<li>Metal,</li>
+<li>OpenGL 2.1+/ES2+</li>
+</ul>
+<p>OpenGL (first released in 1992!) stands apart from the others by not natively support &quot;close to the metal&quot;, low-level graphics control. As such, Gfx-hal must work around these limitations in order to &quot;emulate&quot; the behavior of the more modern graphics APIs. For best performance/ease of use, it is recommended to prefer Vulkan or Metal when possible.</p>
+<p>Throughout the tutorial series, there will be blocks of code unique to OpenGL that will be tagged with the &quot;gl&quot; feature flag and other blocks of code that will be tagged with the others (&quot;vulkan&quot;, &quot;dx12&quot;, &quot;metal&quot;).</p>
+<a class="header" href="print.html#setting-up-the-backends" id="setting-up-the-backends"><h3>Setting up the Backends</h3></a>
+<blockquote>
+<p>Note: Since the previous section, we have refactored the window setup and loop
+execution into helper functions and moved them to the bottom of the file.
+We'll be doing this throughout the series (when possible) to keep the example files focused
+on the content being delivered. Click the &quot;show hidden lines&quot; icon <img src="https://i.imgur.com/mjHEqXq.png" alt="icon" />
+in the full listings at the bottom to see the changes made.</p>
+</blockquote>
+<p>Let's begin by adding some feature flags and specifying dependencies for them:</p>
+<a class="header" href="print.html#cargotoml" id="cargotoml"><h5>Cargo.toml</h5></a>
+<pre><code>[features]
+default = [] ### &lt;-- Add a preferred default if you'd like, eg. [&quot;vulkan&quot;]
+
+vulkan = [&quot;gfx-backend-vulkan&quot;]
+metal = [&quot;gfx-backend-metal&quot;]
+dx12 = [&quot;gfx-backend-dx12&quot;]
+gl = [&quot;gfx-backend-gl&quot;]
+empty = [&quot;&amp;&quot;]
+
+[dependencies.gfx-backend-dx12]
+git = &quot;https://github.com/gfx-rs/gfx&quot;
+optional = true
+
+[dependencies.gfx-backend-empty]
+git = &quot;https://github.com/gfx-rs/gfx&quot;
+
+[dependencies.gfx-backend-gl]
+git = &quot;https://github.com/gfx-rs/gfx&quot;
+optional = true
+
+[dependencies.gfx-backend-metal]
+git = &quot;https://github.com/gfx-rs/gfx&quot;
+optional = true
+
+[dependencies.gfx-backend-vulkan]
+git = &quot;https://github.com/gfx-rs/gfx&quot;
+optional = true
+
+[dependencies.gfx-hal]
+git = &quot;https://github.com/gfx-rs/gfx&quot;
+
+</code></pre>
+<p>With the feature flags in place, we can now do <a href="https://doc.rust-lang.org/1.14.0/book/conditional-compilation.html">conditional compilation</a> based on what graphics backend we choose.</p>
+<p>For example, <code>cargo run --features vulkan</code> to build/run a project's main with the Vulkan graphics backend selected. If a default is set in Cargo.toml,  <code>--features...</code>  may be left off.</p>
+<p>Now, add the following to the top of main.rs:</p>
+<a class="header" href="print.html#mainrs" id="mainrs"><h5>main.rs</h5></a>
+<pre><pre class="playpen"><code class="language-rust">extern crate gfx_hal as hal;
+#[cfg(feature = &quot;dx12&quot;)]
+extern crate gfx_backend_dx12 as back;
+#[cfg(feature = &quot;vulkan&quot;)]
+extern crate gfx_backend_vulkan as back;
+#[cfg(feature = &quot;metal&quot;)]
+extern crate gfx_backend_metal as back;
+#[cfg(feature = &quot;gl&quot;)]
+extern crate gfx_backend_gl as back;
+
+#[cfg(any(feature = &quot;vulkan&quot;, feature = &quot;dx12&quot;, feature = &quot;metal&quot;, feature = &quot;gl&quot;))]
+fn main() {... *Snip*}
+</code></pre></pre>
+<p>What did we get done? We declared a conditional identifier 'back' to point to a specific backend
+based on a feature flag. We also made our main function dependent on a feature flag being set.</p>
+<p>Great job!
+Go have a jam sandwich then check out the next section on Instances, Adapters and Surfaces.</p>
+<a class="header" href="print.html#cargotoml-full-listing" id="cargotoml-full-listing"><h5>Cargo.toml full listing</h5></a>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+
+#fn main() {
+#
+########### Cargo.toml begins here. Discard above ---^
+#
+# [package]
+# authors = [&quot;Adrian Perreault&quot;]
+# name = &quot;vulkan_tutorial_in_gfx&quot;
+# version = &quot;0.1.0&quot;
+# [dependencies]
+# env_logger = &quot;*&quot;
+# log = &quot;*&quot;
+# winit = &quot;*&quot;
+#
+# [features]
+# default = [&quot;vulkan&quot;]
+# dx12 = [&quot;gfx-backend-dx12&quot;]
+# gl = [&quot;gfx-backend-gl&quot;]
+# metal = [&quot;gfx-backend-metal&quot;]
+# vulkan = [&quot;gfx-backend-vulkan&quot;]
+#
+# [dependencies.gfx-backend-dx12]
+# git = &quot;https://github.com/gfx-rs/gfx&quot;
+# optional = true
+#
+# [dependencies.gfx-backend-empty]
+# git = &quot;https://github.com/gfx-rs/gfx&quot;
+#
+# [dependencies.gfx-backend-gl]
+# git = &quot;https://github.com/gfx-rs/gfx&quot;
+# optional = true
+#
+# [dependencies.gfx-backend-metal]
+# git = &quot;https://github.com/gfx-rs/gfx&quot;
+# optional = true
+#
+# [dependencies.gfx-backend-vulkan]
+# git = &quot;https://github.com/gfx-rs/gfx&quot;
+# optional = true
+#
+# [dependencies.gfx-hal]
+# git = &quot;https://github.com/gfx-rs/gfx&quot;
+#
+# [[bin]]
+# name = &quot;ch2_2&quot;
+# path = &quot;src/ch2/_2_making_a_window.rs&quot;
+#
+# [[bin]]
+# name = &quot;ch2_3&quot;
+# path = &quot;src/ch2/_2_backends.rs&quot;
+#
+########### Cargo.toml ends here. Discard below ---v
+#}</code></pre></pre>
+<a class="header" href="print.html#mainrs-full-listing" id="mainrs-full-listing"><h5>main.rs full listing</h5></a>
+<pre><pre class="playpen"><code class="language-rust"># extern crate gfx_hal as hal;
+# #[cfg(feature = &quot;dx12&quot;)]
+# extern crate gfx_backend_dx12;
+# #[cfg(feature = &quot;vulkan&quot;)]
+# extern crate gfx_backend_vulkan as back;
+# #[cfg(feature = &quot;metal&quot;)]
+# extern crate gfx_backend_metal as back;
+# #[cfg(feature = &quot;gl&quot;)]
+# extern crate gfx_backend_gl as back;
+#
+# #[cfg(any(feature = &quot;vulkan&quot;, feature = &quot;dx12&quot;, feature = &quot;metal&quot;, feature = &quot;gl&quot;))]
+# fn main() {
+#     let (events_loop, window) = setup_window();
+#     run_main_events_loop(events_loop);
+# }
+#
+# //// # Previous Tutorial Content ///////////////////////////////////////////////////
+# extern crate winit;
+#
+# use winit::{Event, WindowEvent, EventsLoop};
+# use winit::Window;
+# use std::cell::Cell;
+#
+# // ## Window Setup #################################################################
+# fn setup_window() -&gt; ( Cell&lt;EventsLoop&gt;, Window) {
+#
+#     // Create a main execution event loop for listening for input/window events.
+#     let events_loop=  winit::EventsLoop::new();
+#
+#     // Specify basic window properties and EventsLoop with WindowBuilder
+#     // and build/display the window.
+#     let window = winit::WindowBuilder::new()
+#         .with_title(&quot;Gfx-hal Quickstart Tutorial&quot;)
+#         .with_dimensions(800, 600)
+#         .build(&amp;events_loop)
+#         .unwrap();
+#
+#     (Cell::new(events_loop), window)
+#
+# }
+# //##################################################################################
+#
+#
+# //## Main Loop Execution ###########################################################
+# fn run_main_events_loop(events_loop: Cell&lt;EventsLoop&gt;) {
+#
+#     let mut running = true;
+#     // Taking the EventsLoop object out of the Cell&lt;EventLoop&gt; so we can use it normally.
+#     let mut events_loop = events_loop.into_inner();
+#     // Run our main loop indefinitely, checking for events until we explicitly stop it.
+#     while running {
+#         events_loop.poll_events(|event| {
+#
+#             // If we get a WindowEvent...
+#             if let winit::Event::WindowEvent { event, .. } = event {
+#                 match event {
+#
+#                     // And if that WindowEvent is a KeyBoardInput event...
+#                     winit::WindowEvent::KeyboardInput {
+#                         input: winit::KeyboardInput {
+#
+#                             // If the KeyboardInput was the Escape key...
+#                             virtual_keycode: Some(winit::VirtualKeyCode::Escape),
+#                             ..
+#                         },
+#                         ..
+#                     }
+#                     // Or, if the event is a window closed event,
+#                     // set running to false to end the main loop.
+#                     | winit::WindowEvent::Closed =&gt; running = false,
+#                     _ =&gt; (),
+#                 }
+#             }
+#         });
+#     }
+# }
+# //##################################################################################
+#
+# ////////////////////////////////////////////////////////////////////////////////////
+
+</code></pre></pre>
+<a class="header" href="print.html#instances-adapters-and-surfaces-wip" id="instances-adapters-and-surfaces-wip"><h1>Instances, Adapters and Surfaces (WIP)</h1></a>
+<a class="header" href="print.html#instances" id="instances"><h3>Instances</h3></a>
+<p>An instance is the main connection between your application and the underlying backends and hardware.
+It provides access to surfaces and adapters.</p>
+<a class="header" href="print.html#surfaces" id="surfaces"><h3>Surfaces</h3></a>
+<p>Surfaces are a cross-platform abstraction over windows.</p>
+<blockquote>
+<p><em>&quot;Hey, isn't that basically what Winit/Glutin is?&quot;</em></p>
+</blockquote>
+<p>Close! A surface is a general abstraction over windows (which may be created via Winit, Glutin, the Microsoft Windows Api etc.) for Gfx-hal to work with. A surface is created by passing in an existing window or window handle (hwnd in Windows) to the <code>create_surface</code> or <code>create_surface_from_hwnd</code> functions on an instance.</p>
+<a class="header" href="print.html#adapters" id="adapters"><h3>Adapters</h3></a>
+<p>Adapters are an abstraction consisting of a handle to a physical (or virtual) devices (ie. your graphics card), info such as a device's name/vendor Id /device Id and, a vector of supported Queue Families.</p>
+<a class="header" href="print.html#queue-families" id="queue-families"><h3>Queue Families</h3></a>
+<p>In Gfx-hal, when one wishes to interact with a graphics card to perform some task, a command must be added to some queue. Queues are categorized into separate families based on their utility.
+Currently, the Queue types include:</p>
+<ul>
+<li>General</li>
+<li>Graphics</li>
+<li>Compute</li>
+<li>Transfer</li>
+</ul>
+<a class="header" href="print.html#lets-dive-in" id="lets-dive-in"><h3>Let's dive in!</h3></a>
+<a class="header" href="print.html#in-mainrs" id="in-mainrs"><h4>In main.rs:</h4></a>
+<p>Add this use item at the top:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+use hal::{Instance, PhysicalDevice};
+#}</code></pre></pre>
+<p>Add the following after a Window and EventsLoop is created, but before the main execution of the EventsLoop:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+  #[cfg(any(feature = &quot;vulkan&quot;, feature = &quot;dx12&quot;, feature = &quot;metal&quot;))]
+    let (_instance, adapters, surface) = {
+        let instance = back::Instance::create(&quot;Our Awesome Instance Instance&quot;, 1);
+        let surface = instance.create_surface(&amp;window);
+        let adapters = instance.enumerate_adapters();
+        (instance, adapters, surface)
+    };
+
+#}</code></pre></pre>
+<ul>
+<li>We exclude OpenGL via a cfg attribute for the time being! (Sorry old guy... We'll Come back to you later.)</li>
+<li>We create an Instance, collection of adapters and a surface</li>
+</ul>
+<p>Let's use our new found friends, flex our inner OCD and print out some sweet data!</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+ #[cfg(any(feature = &quot;vulkan&quot;))] {
+    println!(&quot;------------------------------------------------------&quot;);
+    println!(&quot;Instance Extensions&quot;);
+    println!(&quot;------------------------------------------------------&quot;);
+    println!(&quot;{:#?}\n&quot;, _instance.extensions);
+    println!(&quot;------------------------------------------------------&quot;);
+
+for adapter in &amp;adapters {
+    println!(&quot;------------------------------------------------------&quot;);
+    println!(&quot;Adapter Info&quot;);
+    println!(&quot;------------------------------------------------------&quot;);
+    println!(&quot;{:#?}&quot;, adapter.info);
+    println!(&quot;------------------------------------------------------&quot;);
+    println!(&quot;Queue Families&quot;);
+    println!(&quot;------------------------------------------------------&quot;);
+    println!(&quot;{:#?}&quot;, adapter.queue_families);
+    println!(&quot;------------------------------------------------------&quot;);
+    println!(&quot;Physical Device Features&quot;);
+    println!(&quot;------------------------------------------------------&quot;);
+    println!(&quot;{:#?}&quot;, adapter.physical_device.get_features());
+    println!(&quot;------------------------------------------------------&quot;);
+    println!(&quot;Physical Device Memory Properties&quot;);
+    println!(&quot;------------------------------------------------------&quot;);
+    println!(&quot;{:#?}&quot;, adapter.physical_device.memory_properties());
+    println!(&quot;------------------------------------------------------&quot;);
+    println!(&quot;Physical Device Limits&quot;);
+    println!(&quot;------------------------------------------------------&quot;);
+    println!(&quot;{:#?}&quot;, adapter.physical_device.get_limits());
+    println!(&quot;------------------------------------------------------&quot;);
+
+    println!(&quot;------------------------------------------------------&quot;);
+    println!(&quot;Surface&quot;);
+    println!(&quot;------------------------------------------------------&quot;);
+    println!(&quot;{:#?}\n&quot;, surface.capabilities_and_formats(&amp;adapters[0].physical_device));
+    println!(&quot;------------------------------------------------------&quot;);
+    }
+#}</code></pre></pre>
+<p>With any luck, if you're running with Vulkan, you should see something like the following:</p>
+<p><img src="https://i.imgur.com/veVedZq.png" alt="img" /></p>
+<p>All that sweet data! Just imagine the possibilities!</p>
+<p>Ok... so let's take a closer look at some of this stuff.</p>
+<a class="header" href="print.html#instance-extensions-vulkan" id="instance-extensions-vulkan"><h4>Instance Extensions (Vulkan)</h4></a>
+<p>Extensions are a way to 'extend' the Vulkan API with new commands, structures and enumerants.</p>
+<p>For example:</p>
+<ul>
+<li>VK_KHR_surface      - Allows for Surface objects to be created</li>
+<li>VK_EXT_debug_report - Allows for debug information to be outputted.</li>
+<li>VK_KHR_xcb_surface  - Provides a way to make Surfaces that refer to X11 windows (Linux)</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+
+                
+            </nav>
+
+        </div>
+
+
+        <!-- Local fallback for Font Awesome -->
+        <script>
+            if (getComputedStyle(document.querySelector(".fa")).fontFamily !== "FontAwesome") {
+                var link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.type = 'text/css';
+                link.href = '_FontAwesome/css/font-awesome.css';
+                document.head.insertBefore(link, document.head.firstChild)
+            }
+        </script>
+
+        
+
+        
+
+        
+
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                window.print();
+            })
+        </script>
+        
+
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS script -->
+        
+
+    </body>
+</html>

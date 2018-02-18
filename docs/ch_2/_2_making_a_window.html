@@ -1,0 +1,320 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Making a Window - Gfx-hal</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="A practical guide and reference manual for Gfx-hal and Winit.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <base href="../">
+
+        <link rel="stylesheet" href="book.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <link rel="shortcut icon" href="favicon.png">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme -->
+        
+
+        
+
+        <!-- Fetch Clipboard.js from CDN but have a local fallback -->
+        <script src="https://cdn.jsdelivr.net/clipboard.js/1.6.1/clipboard.min.js"></script>
+        <script>
+            if (typeof Clipboard == 'undefined') {
+                document.write(unescape("%3Cscript src='clipboard.min.js'%3E%3C/script%3E"));
+            }
+        </script>
+
+    </head>
+    <body class="light">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
+            if (theme === null || theme === undefined) { theme = 'light'; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme;
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            document.querySelector('html').classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <ol class="chapter"><li><a href="ch_2/_0_quick_start_guide.html"><strong aria-hidden="true">1.</strong> Quick Start Guide</a></li><li><ol class="section"><li><a href="ch_2/_2_making_a_window.html" class="active"><strong aria-hidden="true">1.1.</strong> Making a Window</a></li><li><a href="ch_2/_3_graphics_backends_prep.html"><strong aria-hidden="true">1.2.</strong> Graphics Backends Prep</a></li><li><a href="ch_2/_4_instances_adapters_and_surfaces.html"><strong aria-hidden="true">1.3.</strong> Instances, Adapters and Surfaces</a></li></ol></li></ol>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="submenu">
+                                <li><button class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li><button class="theme" id="rust">Rust</button></li>
+                                <li><button class="theme" id="coal">Coal</button></li>
+                                <li><button class="theme" id="navy">Navy</button></li>
+                                <li><button class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                        </div>
+
+                        <h1 class="menu-title">Gfx-hal</h1>
+
+                        <div class="right-buttons">
+                            <a href="print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <a class="header" href="ch_2/_2_making_a_window.html#making-a-window-with-winit-wip" id="making-a-window-with-winit-wip"><h2>Making a Window with Winit (WIP)</h2></a>
+<p>When working with Gfx-hal, we need a window to display content and interact with input. Typically this is done
+with <a href="https://github.com/tomaka/winit">Winit</a>, a cross-platform window creation and management library written in Rust.
+When targeting OpenGL with Gfx-hal, there are context requirements that necessitate using <a href="https://github.com/tomaka/glutin">Glutin</a> (OpenGL, UTilities and INput) instead of Winit. The two APIs are similar. In fact, Winit was created by cutting out the OpenGL related stuff from Glutin.</p>
+<a class="header" href="ch_2/_2_making_a_window.html#window-setup" id="window-setup"><h3>Window Setup</h3></a>
+<p>Let's start off with a basic 800 x 600 window with a title:</p>
+<pre><pre class="playpen"><code class="language-rust">extern crate winit;
+use winit::{Event, WindowEvent};
+
+fn main() {
+
+    // Create a main execution event loop for listening for input/window events.
+    let mut events_loop = winit::EventsLoop::new();
+
+    // Specify basic window properties and EventsLoop with WindowBuilder
+    // and build/display the window.
+    let window = winit::WindowBuilder::new()
+        .with_title(&quot;Gfx-hal Quickstart Tutorial&quot;)
+        .with_dimensions(800, 600)
+        .build(&amp;events_loop)
+        .unwrap();
+
+</code></pre></pre>
+<a class="header" href="ch_2/_2_making_a_window.html#window-events" id="window-events"><h3>Window Events</h3></a>
+<p>We'll use window events in the main events loop to handle behaviors like closing a window on keypress
+and later on in the series, window resized and  mouse input events.
+.</p>
+<p>WindowEvents in Winit include:</p>
+<table><thead><tr><th> Window               </th><th> Mouse/Cursor  </th><th> Other Input / Misc. </th></tr></thead><tbody>
+<tr><td> Resized              </td><td> MouseInput    </td><td>  KeyboardInput      </td></tr>
+<tr><td> Moved                </td><td> MouseWheel    </td><td> TouchpadPressure    </td></tr>
+<tr><td> Closed               </td><td> CursorLeft    </td><td>  AxisMotion         </td></tr>
+<tr><td> DroppedFile          </td><td> CursorEntered </td><td>  Refresh            </td></tr>
+<tr><td> HoveredFile          </td><td> CursorMoved   </td><td>  Touch              </td></tr>
+<tr><td> HoveredFileCancelled </td><td>               </td><td>  HiDPIFactorChanged </td></tr>
+<tr><td> ReceivedCharacter    </td><td>               </td><td>                     </td></tr>
+<tr><td> Focused              </td><td>               </td><td>                     </td></tr>
+</tbody></table>
+<a class="header" href="ch_2/_2_making_a_window.html#main-loop" id="main-loop"><h3>Main Loop</h3></a>
+<p>Let's kick off the main events loop and make sure we can close the window.</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+  let mut running = true;
+
+    // Keep our main loop running until an event to explicitly stop it.
+    while running {
+
+        events_loop.poll_events(|event| {
+
+    // If we get a WindowEvent...
+            if let winit::Event::WindowEvent { event, .. } = event {
+                match event {
+
+    // And if that WindowEvent is a KeyBoardInput event...
+                    winit::WindowEvent::KeyboardInput {
+                        input: winit::KeyboardInput {
+
+    // If the KeyboardInput was the Escape key...
+                            virtual_keycode: Some(winit::VirtualKeyCode::Escape),
+                            ..
+                        },
+                        ..
+                    }
+    // Or, if the event is a window closed event,
+    // set running to false to end the main loop.
+                    | winit::WindowEvent::Closed =&gt; running = false,
+                    _ =&gt; (),
+                }
+            }
+        });
+    }
+
+#}</code></pre></pre>
+<p>With any luck, running this code should produce a basic window. (How exciting!)
+Let's carry on and start setting up Gfx-hal backends in the next section.</p>
+<a class="header" href="ch_2/_2_making_a_window.html#mainrs-full-listing-----click--img-srchttpsiimgurcommjheqxqpng-altimg-" id="mainrs-full-listing-----click--img-srchttpsiimgurcommjheqxqpng-altimg-"><h5>main.rs full listing   - click  <img src="https://i.imgur.com/mjHEqXq.png" alt="img" /></h5></a>
+<pre><pre class="playpen"><code class="language-rust">
+# extern crate winit;
+#
+# use winit::WindowEvent;
+#
+# fn main() {
+# // ## Window Setup ##################################################################
+#
+#     // Create a main execution event loop for listening for input/window events.
+#     let mut events_loop = winit::EventsLoop::new();
+#
+#     // Specify basic window properties and EventsLoop with WindowBuilder
+#     // and build/display the window.
+#     let window = winit::WindowBuilder::new()
+#         .with_title(&quot;Gfx-hal Quickstart Tutorial&quot;)
+#         .with_dimensions(800, 600)
+#         .build(&amp;events_loop)
+#         .unwrap();
+#
+# //###################################################################################
+#
+#
+# //## Main Loop Execution #############################################################
+#     let mut running = true;
+#
+#     // Run our main loop indefinitely, checking for events until we explicitly stop it.
+#     while running {
+#
+#         events_loop.poll_events(|event| {
+#
+#             // If we get a WindowEvent...
+#             if let winit::Event::WindowEvent { event, .. } = event {
+#                 match event {
+#
+#                     // And if that WindowEvent is a KeyBoardInput event...
+#                     winit::WindowEvent::KeyboardInput {
+#                         input: winit::KeyboardInput {
+#
+#                             // If the KeyboardInput was the Escape key...
+#                             virtual_keycode: Some(winit::VirtualKeyCode::Escape),
+#                             ..
+#                         },
+#                         ..
+#                     }
+#                     // Or, if the event is a window closed event,
+#                     // set running to false to end the main loop.
+#                     | winit::WindowEvent::Closed =&gt; running = false,
+#                     _ =&gt; (),
+#                 }
+#             }
+#         });
+#     }
+# //##################################################################################
+# }
+</code></pre></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="ch_2/_0_quick_start_guide.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="ch_2/_3_graphics_backends_prep.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="ch_2/_0_quick_start_guide.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="ch_2/_3_graphics_backends_prep.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+
+        <!-- Local fallback for Font Awesome -->
+        <script>
+            if (getComputedStyle(document.querySelector(".fa")).fontFamily !== "FontAwesome") {
+                var link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.type = 'text/css';
+                link.href = '_FontAwesome/css/font-awesome.css';
+                document.head.insertBefore(link, document.head.firstChild)
+            }
+        </script>
+
+        
+
+        
+
+        
+
+        
+
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS script -->
+        
+
+    </body>
+</html>
